@@ -75,13 +75,18 @@ void deviceRemovalCallback(void *context, IOReturn result, void *sender, IOHIDDe
         return;
     }
 
-    // Crear un diccionario para encontrar acelerómetros 3D
-    NSDictionary *matchingDict = @{
-        (NSString *)kIOHIDDeviceUsagePageKey: @(kHIDPage_Sensor),
-        (NSString *)kIOHIDDeviceUsageKey: @(kHIDUsage_Sens_Motion_Accelerometer3D)
-    };
+    // Buscar todos los dispositivos HID de sensores primero
+    NSArray *matchingDictArray = @[
+        @{
+            (NSString *)kIOHIDDeviceUsagePageKey: @(kHIDPage_Sensor),
+            (NSString *)kIOHIDDeviceUsageKey: @(kHIDUsage_Sens_Motion_Accelerometer3D)
+        },
+        @{
+            (NSString *)kIOHIDDeviceUsagePageKey: @(kHIDPage_Sensor)
+        }
+    ];
 
-    IOHIDManagerSetDeviceMatching(self.hidManager, (__bridge CFDictionaryRef)matchingDict);
+    IOHIDManagerSetDeviceMatchingMultiple(self.hidManager, (__bridge CFArrayRef)matchingDictArray);
 
     // Registrar callbacks
     IOHIDManagerRegisterDeviceMatchingCallback(self.hidManager, deviceMatchingCallback, (__bridge void *)self);
@@ -94,9 +99,9 @@ void deviceRemovalCallback(void *context, IOReturn result, void *sender, IOHIDDe
     IOReturn result = IOHIDManagerOpen(self.hidManager, kIOHIDOptionsTypeNone);
     if (result != kIOReturnSuccess) {
         NSLog(@"Error al abrir IOHIDManager: %d", result);
-        [self stopSensorMonitoring]; // Limpiar en caso de error
+        [self stopSensorMonitoring];
     } else {
-        NSLog(@"IOHIDManager abierto correctamente.");
+        NSLog(@"IOHIDManager abierto correctamente. Buscando sensores...");
     }
 }
 
@@ -108,9 +113,27 @@ void deviceRemovalCallback(void *context, IOReturn result, void *sender, IOHIDDe
         self.hidManager = NULL;
         NSLog(@"IOHIDManager detenido.");
     }
+    
+    self.currentDevice = NULL;
+    self.sensorFound = NO;
 }
 
 - (void)deviceMatched:(IOHIDDeviceRef)device {
+    // Log información del dispositivo
+    NSString *manufacturer = (__bridge NSString *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDManufacturerKey));
+    NSString *product = (__bridge NSString *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDProductKey));
+    NSNumber *usagePage = (__bridge NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDDeviceUsagePageKey));
+    NSNumber *usage = (__bridge NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDDeviceUsageKey));
+    
+    NSLog(@"Dispositivo encontrado: %@ %@ (UsagePage: %@, Usage: %@)",
+          manufacturer ?: @"Unknown", product ?: @"Unknown", usagePage, usage);
+
+    // Solo procesar dispositivos de sensores
+    if ([usagePage intValue] != kHIDPage_Sensor) {
+        NSLog(@"Dispositivo ignorado: no es un sensor");
+        return;
+    }
+    
     if (self.currentDevice) {
         NSLog(@"Ya se está monitoreando un dispositivo. Ignorando el nuevo.");
         return;
@@ -118,34 +141,40 @@ void deviceRemovalCallback(void *context, IOReturn result, void *sender, IOHIDDe
     
     self.currentDevice = device;
 
-    // Encontrar los elementos para los ejes X, Y, y Z y guardar sus cookies
+    // Encontrar los elementos para los ejes X, Y, y Z
     NSArray *elements = (__bridge_transfer NSArray *)IOHIDDeviceCopyMatchingElements(device, NULL, kIOHIDOptionsTypeNone);
+    NSLog(@"Elementos encontrados: %lu", (unsigned long)[elements count]);
+    
     for (NSDictionary *element in elements) {
-        uint32_t usagePage = [element[(NSString *)kIOHIDElementUsagePageKey] unsignedIntValue];
-        if (usagePage != kHIDPage_Sensor) {
-            continue;
-        }
-
-        uint32_t usage = [element[(NSString *)kIOHIDElementUsageKey] unsignedIntValue];
+        uint32_t elementUsagePage = [element[(NSString *)kIOHIDElementUsagePageKey] unsignedIntValue];
+        uint32_t elementUsage = [element[(NSString *)kIOHIDElementUsageKey] unsignedIntValue];
         IOHIDElementCookie cookie = [element[(NSString *)kIOHIDElementCookieKey] unsignedIntValue];
+        
+        NSLog(@"Elemento - UsagePage: 0x%02X, Usage: 0x%02X, Cookie: %u",
+              elementUsagePage, elementUsage, cookie);
 
-        if (usage == kHIDUsage_Sens_Data_Motion_AccelerationX) {
-            self.xAxisCookie = cookie;
-        } else if (usage == kHIDUsage_Sens_Data_Motion_AccelerationY) {
-            self.yAxisCookie = cookie;
-        } else if (usage == kHIDUsage_Sens_Data_Motion_AccelerationZ) {
-            self.zAxisCookie = cookie;
+        if (elementUsagePage == kHIDPage_Sensor) {
+            if (elementUsage == kHIDUsage_Sens_Data_Motion_AccelerationX) {
+                self.xAxisCookie = cookie;
+                NSLog(@"Eje X encontrado, cookie: %u", cookie);
+            } else if (elementUsage == kHIDUsage_Sens_Data_Motion_AccelerationY) {
+                self.yAxisCookie = cookie;
+                NSLog(@"Eje Y encontrado, cookie: %u", cookie);
+            } else if (elementUsage == kHIDUsage_Sens_Data_Motion_AccelerationZ) {
+                self.zAxisCookie = cookie;
+                NSLog(@"Eje Z encontrado, cookie: %u", cookie);
+            }
         }
     }
     
     if (self.xAxisCookie && self.yAxisCookie && self.zAxisCookie) {
         self.sensorFound = YES;
-        NSLog(@"Dispositivo acelerómetro encontrado y configurado.");
-        // Registrar el callback de valores de entrada para este dispositivo específico
+        NSLog(@"Dispositivo acelerómetro configurado correctamente.");
         IOHIDDeviceRegisterInputValueCallback(device, inputValueCallback, (__bridge void*)self);
     } else {
-        NSLog(@"No se pudieron encontrar todos los elementos de los ejes en el dispositivo.");
-        self.currentDevice = NULL; // Reiniciar porque la configuración falló
+        NSLog(@"No se encontraron todos los ejes. X:%u Y:%u Z:%u",
+              self.xAxisCookie, self.yAxisCookie, self.zAxisCookie);
+        self.currentDevice = NULL;
     }
 }
 
