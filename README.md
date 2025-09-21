@@ -1,3 +1,7 @@
+<img width="935" height="606" alt="image" src="https://github.com/user-attachments/assets/a6cdb6e1-3122-4b9d-97d8-e75a17927901" />
+
+
+
 -------------------------------- Ingles--------------------------------
 
 On my Mac M4 Air, the auto motion sensor option was enabled in macOS 26. (and work)
@@ -13,7 +17,8 @@ Mac IDs and sensors are complicated to use and locate.
 I'll do my best to make it work.
 
 My programming knowledge in Objective-C, Metal, or Swift is practically nonexistent, so I'll do my best.
-
+The accelerometer appears as "accel" in AOP Sensors.
+The gyroscope appears as "gyro" in AOP Sensors.
 
 --------------------------------- Español-------------------------------
 
@@ -31,3 +36,6 @@ Los ID y sensores de Mac son complicados de usar y ubicar.
 Se hara lo posible para que funcione.
 
 Mi conocimiento de programacion en Objetive-C, Metal o Switf son practicamente nulos, por lo cual hare lo posible.
+
+El acelerómetro aparece como "accel" dentro de AOP Sensors.
+El giroscopio aparece como "gyro" dentro de AOP Sensors.
