@@ -1,0 +1,33 @@
+-------------------------------- Ingles--------------------------------
+
+On my Mac M4 Air, the auto motion sensor option was enabled in macOS 26. (and work)
+The same as on the iPhone, so I figure the Mac must have sensors identical to those on an iPhone.
+
+For now, this project only seeks to extract raw data from the Mac's sensors and simply display it.
+
+Perhaps later it could be used for 3D effects or even games, or who knows.
+
+This project is still in its infancy and isn't even close to being compiled.
+Mac IDs and sensors are complicated to use and locate.
+
+I'll do my best to make it work.
+
+My programming knowledge in Objective-C, Metal, or Swift is practically nonexistent, so I'll do my best.
+
+
+--------------------------------- Español-------------------------------
+
+
+En mi Mac M4 Air se activo la opcion de sensor de movimiento para auto en MacOs 26. (y funciona)
+Lo mismo que en Iphone, por lo que calculo que la Mac debe tener sensores iguales que los de un Iphone.
+
+Este proyecto por ahora solo busca extraer los datos crudos de los sensores de la Mac y mostrarlos simplemente.
+
+Quizas mas adelante pueda ser utilizado para efectos 3D o incluso juegos o quien sabe.
+
+Este proyecto aun esta totalmente en pañales y no esta cerca nisiquiera de compilar
+Los ID y sensores de Mac son complicados de usar y ubicar.
+
+Se hara lo posible para que funcione.
+
+Mi conocimiento de programacion en Objetive-C, Metal o Switf son practicamente nulos, por lo cual hare lo posible.
