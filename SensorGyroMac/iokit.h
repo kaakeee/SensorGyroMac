@@ -1,27 +1,34 @@
+//
+//  iokit.h
 //  SensorGyroMac
 //
 //  Created by Ramiro Nehuen Sanabria on 20/09/2025.
 //
-
+/*
 #import <Foundation/Foundation.h>
 #import <IOKit/hid/IOHIDManager.h>
 #import <IOKit/hid/IOHIDDevice.h>
 #import <IOKit/hid/IOHIDElement.h>
 #import <IOKit/hid/IOHIDValue.h>
 
-// Explicitly define the HID usage constants from the Swift file,
-// which are based on the HID Usage Tables specification for sensors.
-#define kHIDPage_Sensor                     0x20 // Usage Page for Sensors
-#define kHIDUsage_Sens_Motion_Accelerometer3D 0x73 // Usage ID for a 3D Accelerometer sensor (corregido)
-#define kHIDUsage_Sens_Data_Motion_AccelerationX 0x04 // Data Usage ID for X-axis acceleration
-#define kHIDUsage_Sens_Data_Motion_AccelerationY 0x05 // Data Usage ID for Y-axis acceleration
-#define kHIDUsage_Sens_Data_Motion_AccelerationZ 0x06 // Data Usage ID for Z-axis acceleration
+// Constantes HID corregidas para sensores
+#define kHIDPage_Sensor                          0x20  // Página de uso para sensores
+#define kHIDUsage_Sens_Motion_Accelerometer3D    0x73  // ID de uso para acelerómetro 3D
+
+// Constantes para datos de movimiento (basadas en el estándar HID)
+#define kHIDUsage_Sens_Data_Motion_AccelerationAxisX  0x0453  // Aceleración eje X
+#define kHIDUsage_Sens_Data_Motion_AccelerationAxisY  0x0454  // Aceleración eje Y
+#define kHIDUsage_Sens_Data_Motion_AccelerationAxisZ  0x0455  // Aceleración eje Z
+
+// Constantes alternativas más simples
+#define kHIDUsage_Sens_Acceleration_X            0x53  // Aceleración X simplificada
+#define kHIDUsage_Sens_Acceleration_Y            0x54  // Aceleración Y simplificada
+#define kHIDUsage_Sens_Acceleration_Z            0x55  // Aceleración Z simplificada
 
 // Forward declarations
 @class GyroManager;
 
 // Declare C functions required by IOKit callbacks.
-// These will be implemented in the .m file.
 void inputValueCallback(void *context, IOReturn result, void *sender, IOHIDValueRef value);
 void deviceMatchingCallback(void *context, IOReturn result, void *sender, IOHIDDeviceRef device);
 void deviceRemovalCallback(void *context, IOReturn result, void *sender, IOHIDDeviceRef device);
@@ -52,3 +59,5 @@ void deviceRemovalCallback(void *context, IOReturn result, void *sender, IOHIDDe
 - (void)deviceRemoved:(IOHIDDeviceRef)device;
 
 @end
+
+*/

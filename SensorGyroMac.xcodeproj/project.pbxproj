@@ -36,13 +36,6 @@
 				"SensorGyroMac-Bridging-Header.h",
 			);
 		};
-		397BD5842E7F791F00454E75 /* Exceptions for "SensorGyroMac" folder in "Copy Bundle Resources" phase from "SensorGyroMac" target */ = {
-			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
-			buildPhase = 397BD5382E7F6F9E00454E75 /* Resources */;
-			membershipExceptions = (
-				SensorGyroApp.swift,
-			);
-		};
 /* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -51,7 +44,6 @@
 			exceptions = (
 				397BD5832E7F791F00454E75 /* Exceptions for "SensorGyroMac" folder in "SensorGyroMac" target */,
 				397BD5482E7F6FBB00454E75 /* Exceptions for "SensorGyroMac" folder in "Compile Sources" phase from "SensorGyroMac" target */,
-				397BD5842E7F791F00454E75 /* Exceptions for "SensorGyroMac" folder in "Copy Bundle Resources" phase from "SensorGyroMac" target */,
 			);
 			path = SensorGyroMac;
 			sourceTree = "<group>";

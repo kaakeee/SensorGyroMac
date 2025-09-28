@@ -4,7 +4,7 @@
 //
 //  Created by Ramiro Nehuen Sanabria on 20/09/2025.
 //
-
+/*
 #import "iokit.h"
 
 // Callbacks de C que se comunican con los métodos de la instancia de Objective-C
@@ -75,14 +75,18 @@ void deviceRemovalCallback(void *context, IOReturn result, void *sender, IOHIDDe
         return;
     }
 
-    // Buscar todos los dispositivos HID de sensores primero
+    // Buscar dispositivos de sensores con diferentes configuraciones
     NSArray *matchingDictArray = @[
         @{
-            (NSString *)kIOHIDDeviceUsagePageKey: @(kHIDPage_Sensor),
-            (NSString *)kIOHIDDeviceUsageKey: @(kHIDUsage_Sens_Motion_Accelerometer3D)
+            (__bridge NSString *)kIOHIDDeviceUsagePageKey: @(kHIDPage_Sensor),
+            (__bridge NSString *)kIOHIDDeviceUsageKey: @(kHIDUsage_Sens_Motion_Accelerometer3D)
         },
         @{
-            (NSString *)kIOHIDDeviceUsagePageKey: @(kHIDPage_Sensor)
+            (__bridge NSString *)kIOHIDDeviceUsagePageKey: @(kHIDPage_Sensor)
+        },
+        // Intentar también con páginas de uso genéricas
+        @{
+            (__bridge NSString *)kIOHIDDeviceUsagePageKey: @(kHIDPage_GenericDesktop)
         }
     ];
 
@@ -128,9 +132,9 @@ void deviceRemovalCallback(void *context, IOReturn result, void *sender, IOHIDDe
     NSLog(@"Dispositivo encontrado: %@ %@ (UsagePage: %@, Usage: %@)",
           manufacturer ?: @"Unknown", product ?: @"Unknown", usagePage, usage);
 
-    // Solo procesar dispositivos de sensores
-    if ([usagePage intValue] != kHIDPage_Sensor) {
-        NSLog(@"Dispositivo ignorado: no es un sensor");
+    // Verificar si es un sensor o si contiene datos de acelerómetro
+    if ([usagePage intValue] != kHIDPage_Sensor && [usagePage intValue] != kHIDPage_GenericDesktop) {
+        NSLog(@"Dispositivo ignorado: no es un sensor conocido");
         return;
     }
     
@@ -146,21 +150,26 @@ void deviceRemovalCallback(void *context, IOReturn result, void *sender, IOHIDDe
     NSLog(@"Elementos encontrados: %lu", (unsigned long)[elements count]);
     
     for (NSDictionary *element in elements) {
-        uint32_t elementUsagePage = [element[(NSString *)kIOHIDElementUsagePageKey] unsignedIntValue];
-        uint32_t elementUsage = [element[(NSString *)kIOHIDElementUsageKey] unsignedIntValue];
-        IOHIDElementCookie cookie = [element[(NSString *)kIOHIDElementCookieKey] unsignedIntValue];
+        uint32_t elementUsagePage = [element[(__bridge NSString *)kIOHIDElementUsagePageKey] unsignedIntValue];
+        uint32_t elementUsage = [element[(__bridge NSString *)kIOHIDElementUsageKey] unsignedIntValue];
+        IOHIDElementCookie cookie = [element[(__bridge NSString *)kIOHIDElementCookieKey] unsignedIntValue];
         
         NSLog(@"Elemento - UsagePage: 0x%02X, Usage: 0x%02X, Cookie: %u",
               elementUsagePage, elementUsage, cookie);
 
+        // Buscar elementos de aceleración usando múltiples patrones
         if (elementUsagePage == kHIDPage_Sensor) {
-            if (elementUsage == kHIDUsage_Sens_Data_Motion_AccelerationX) {
+            // Probar con las constantes principales
+            if (elementUsage == kHIDUsage_Sens_Data_Motion_AccelerationAxisX ||
+                elementUsage == kHIDUsage_Sens_Acceleration_X) {
                 self.xAxisCookie = cookie;
                 NSLog(@"Eje X encontrado, cookie: %u", cookie);
-            } else if (elementUsage == kHIDUsage_Sens_Data_Motion_AccelerationY) {
+            } else if (elementUsage == kHIDUsage_Sens_Data_Motion_AccelerationAxisY ||
+                      elementUsage == kHIDUsage_Sens_Acceleration_Y) {
                 self.yAxisCookie = cookie;
                 NSLog(@"Eje Y encontrado, cookie: %u", cookie);
-            } else if (elementUsage == kHIDUsage_Sens_Data_Motion_AccelerationZ) {
+            } else if (elementUsage == kHIDUsage_Sens_Data_Motion_AccelerationAxisZ ||
+                      elementUsage == kHIDUsage_Sens_Acceleration_Z) {
                 self.zAxisCookie = cookie;
                 NSLog(@"Eje Z encontrado, cookie: %u", cookie);
             }
@@ -193,3 +202,4 @@ void deviceRemovalCallback(void *context, IOReturn result, void *sender, IOHIDDe
 }
 
 @end
+*/
